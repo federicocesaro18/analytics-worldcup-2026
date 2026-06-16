@@ -9,14 +9,21 @@ const CONN_W   = 20    // px – horizontal connector width
 const LINE_CLR = '#3a3a3a'
 
 // ─── small sub-components ────────────────────────────────────────────────────
-function TeamRow({ name, score, won, played }) {
-  const color = !played ? '#bbb' : won ? '#ffffff' : '#888'
+function TeamRow({ name, score, pen, won, played }) {
+  const color = !played ? '#bbb' : won ? '#e8e8e8' : '#aaa'
   return (
     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'4px 8px', gap:4 }}>
-      <span style={{ color, fontSize:13, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontWeight: won ? 700 : 400, maxWidth:130 }}>
+      <span style={{ color, fontSize:13, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontWeight: won ? 700 : 400, maxWidth:118 }}>
         {name || 'TBD'}
       </span>
-      {played && <span style={{ color:'#4285f4', fontWeight:700, fontSize:13, flexShrink:0 }}>{score}</span>}
+      {played && (
+        <span style={{ display:'flex', alignItems:'baseline', gap:3, flexShrink:0 }}>
+          <span style={{ color:'#4285f4', fontWeight:700, fontSize:13 }}>{score}</span>
+          {pen !== null && (
+            <span style={{ color: won ? '#f0b429' : '#666', fontSize:10, fontWeight:600 }}>({pen})</span>
+          )}
+        </span>
+      )}
     </div>
   )
 }
@@ -27,17 +34,20 @@ function MatchCard({ match }) {
       TBD
     </div>
   )
-  const { label, teamA, teamB, scoreA, scoreB } = match
+  const { label, teamA, teamB, scoreA, scoreB, penA, penB } = match
   const played = scoreA !== null && scoreA !== undefined && scoreA !== ''
   const sA = parseInt(scoreA), sB = parseInt(scoreB)
-  const wonA = played && sA > sB
-  const wonB = played && sB > sA
+  const pA = penA !== null ? parseInt(penA) : null
+  const pB = penB !== null ? parseInt(penB) : null
+  // rigori decidono il vincitore se i tempi regolamentari sono pari
+  const wonA = played && (sA > sB || (sA === sB && pA !== null && pA > pB))
+  const wonB = played && (sB > sA || (sB === sA && pB !== null && pB > pA))
   return (
     <div style={{ width:COL_W, background:'#2d2d2d', borderRadius:6, borderLeft:`3px solid ${played ? '#4285f4' : '#444'}`, overflow:'hidden' }}>
       <div style={{ fontSize:10, color:'#555', padding:'4px 8px 0', letterSpacing:'.3px' }}>{label}</div>
-      <TeamRow name={teamA} score={scoreA} won={wonA} played={played} />
+      <TeamRow name={teamA} score={scoreA} pen={penA} won={wonA} played={played} />
       <div style={{ height:1, background:'#3d3d3d', margin:'0 8px' }} />
-      <TeamRow name={teamB} score={scoreB} won={wonB} played={played} />
+      <TeamRow name={teamB} score={scoreB} pen={penB} won={wonB} played={played} />
     </div>
   )
 }
@@ -129,10 +139,10 @@ export default function Tabellone() {
       const partita = (row['Partita'] ?? '').trim()
       let teamA = '', teamB = ''
       if (partita.includes(' - ')) [teamA, teamB] = partita.split(' - ', 2).map(s => s.trim())
-      const [scoreA, scoreB] = parseMatchScore(row['Risultato'])
+      const { scoreA, scoreB, penA, penB } = parseMatchScore(row['Risultato'])
 
       rounds[parsed.roundKey] = rounds[parsed.roundKey] ?? []
-      rounds[parsed.roundKey].push({ ...parsed, teamA, teamB, scoreA, scoreB })
+      rounds[parsed.roundKey].push({ ...parsed, teamA, teamB, scoreA, scoreB, penA, penB })
     }
 
     for (const k of Object.keys(rounds)) {
