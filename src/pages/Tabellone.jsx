@@ -10,7 +10,7 @@ const LINE_CLR = '#3a3a3a'
 
 // ─── small sub-components ────────────────────────────────────────────────────
 function TeamRow({ name, score, won, played }) {
-  const color = !played ? '#666' : won ? '#ffffff' : '#3a3a3a'
+  const color = !played ? '#bbb' : won ? '#ffffff' : '#888'
   return (
     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'4px 8px', gap:4 }}>
       <span style={{ color, fontSize:13, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontWeight: won ? 700 : 400, maxWidth:130 }}>
