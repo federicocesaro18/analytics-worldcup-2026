@@ -54,15 +54,15 @@ export function parseCat(cat) {
   return null
 }
 
-// Gestisce "2-1", "1(5)-1(3)" (rigori), "1:0"
+// Gestisce "2-1", "1-1 r5-3" (rigori), "1:0"
 export function parseMatchScore(risultato) {
   const s = (risultato ?? '').trim()
-  const m = s.match(/^(\d+)(?:\((\d+)\))?\s*[-:]\s*(\d+)(?:\((\d+)\))?/)
+  const m = s.match(/^(\d+)\s*[-:]\s*(\d+)(?:\s+r(\d+)-(\d+))?/i)
   if (!m) return { scoreA: null, scoreB: null, penA: null, penB: null }
   return {
     scoreA: m[1],
-    scoreB: m[3],
-    penA: m[2] ?? null,
+    scoreB: m[2],
+    penA: m[3] ?? null,
     penB: m[4] ?? null,
   }
 }
