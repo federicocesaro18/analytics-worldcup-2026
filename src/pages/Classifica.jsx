@@ -54,8 +54,10 @@ export default function Classifica() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
-              <tr key={r.nome}>
+            {rows.map((r, i) => {
+              const rankClass = i === 0 ? 'rank-gold' : i === 1 ? 'rank-silver' : i === 2 ? 'rank-bronze' : ''
+              return (
+              <tr key={r.nome} className={rankClass}>
                 <td className="td-idx td-num">{i + 1}</td>
                 <td style={{ fontWeight: 600 }}>{r.nome}</td>
                 <td className={`td-num totale-col ${totalClass(r.total)}`}>{r.total}</td>
@@ -65,7 +67,8 @@ export default function Classifica() {
                   </td>
                 ))}
               </tr>
-            ))}
+              )
+            })}
           </tbody>
         </table>
       </div>

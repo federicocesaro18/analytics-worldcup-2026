@@ -39,7 +39,7 @@ export default function Marcatori() {
         <div className="section-label" style={{ marginBottom: 14 }}>Top 10</div>
         <ResponsiveContainer width="100%" height={340}>
           <BarChart data={top10} layout="vertical" margin={{ left: 8, right: 40, top: 0, bottom: 0 }}>
-            <XAxis type="number" tick={{ fill: '#888', fontSize: 12 }} axisLine={false} tickLine={false} />
+            <XAxis type="number" allowDecimals={false} tick={{ fill: '#888', fontSize: 12 }} axisLine={false} tickLine={false} />
             <YAxis
               type="category" dataKey="label" width={210}
               tick={{ fill: '#f0f0f0', fontSize: 13 }} axisLine={false} tickLine={false}

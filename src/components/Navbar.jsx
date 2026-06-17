@@ -1,9 +1,9 @@
 const TABS = [
+  { id: 'scelte',     label: 'Risposte Fanta Mondiale' },
   { id: 'classifica', label: 'Classifica Generale' },
   { id: 'gironi',     label: 'Fase a Gironi' },
   { id: 'tabellone',  label: 'Fase a Eliminazione' },
   { id: 'marcatori',  label: 'Classifica Marcatori' },
-  { id: 'scelte',     label: 'Risposte Fanta Mondiale' },
 ]
 
 export default function Navbar({ active, setActive }) {

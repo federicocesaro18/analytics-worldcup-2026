@@ -9,7 +9,7 @@ import Classifica from './pages/Classifica'
 import Marcatori from './pages/Marcatori'
 
 export default function App() {
-  const [active, setActive] = useState('classifica')
+  const [active, setActive] = useState('scelte')
 
   const pages = {
     scelte:     <Scelte />,
