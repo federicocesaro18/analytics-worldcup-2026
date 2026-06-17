@@ -270,6 +270,11 @@ tr:hover td { background: rgba(255,255,255,0.03); }
   padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-bottom: 20px;
 }
 .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+.view-toggle-btn {
+  background: var(--accent); border: none; color: #fff;
+  padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+}
+.view-toggle-btn:hover { background: #3074d4; }
 .loading { color: var(--muted); padding: 60px; text-align: center; }
 .error-box { color: var(--red); padding: 12px 16px; background: rgba(244,67,54,0.1); border-radius: 6px; margin-bottom: 16px; }
 .empty-box { color: var(--muted); padding: 48px; text-align: center; background: var(--bg2); border-radius: 8px; }

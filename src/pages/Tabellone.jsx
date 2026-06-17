@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useSheetData } from '../hooks/useSheetData'
 import { useIsMobile } from '../hooks/useIsMobile'
 import { parseCat, parseMatchScore, ROUND_NAMES } from '../utils/parseData'
@@ -122,7 +122,7 @@ function CenterCol({ finale12, finale34, baseSlots }) {
 }
 
 // ─── mobile: lista per round ──────────────────────────────────────────────────
-function MobileTabellone({ rounds, finale12, finale34, refetch }) {
+function MobileTabellone({ rounds, finale12, finale34, refetch, bracketView }) {
   const ROUND_KEYS = ['S', 'O', 'Q', 'SF']
   const sections = []
   for (const key of ROUND_KEYS) {
@@ -139,8 +139,15 @@ function MobileTabellone({ rounds, finale12, finale34, refetch }) {
 
   return (
     <div className="page">
-      <div className="page-title">Fase a eliminazione</div>
-      <button className="refresh-btn" onClick={refetch}>↻ Aggiorna</button>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, flexWrap:'wrap', gap:8 }}>
+        <div className="page-title" style={{ margin:0 }}>Fase a eliminazione</div>
+        <div style={{ display:'flex', gap:8 }}>
+          <button className="refresh-btn" style={{ margin:0 }} onClick={refetch}>↻</button>
+          <button className="view-toggle-btn" onClick={bracketView}>
+            🏆 Tabellone completo
+          </button>
+        </div>
+      </div>
       {sections.map(section => (
         <div key={section.key} className="mobile-round-section">
           <div className="mobile-round-title">{section.name}</div>
@@ -233,15 +240,33 @@ export default function Tabellone() {
   }
 
   const { leftRounds, rightRounds, finale12, finale34, baseSlots, rounds } = bracket
+  const [showFullBracket, setShowFullBracket] = useState(false)
 
-  if (isMobile) {
-    return <MobileTabellone rounds={rounds} finale12={finale12} finale34={finale34} refetch={refetch} />
+  if (isMobile && !showFullBracket) {
+    return (
+      <MobileTabellone
+        rounds={rounds}
+        finale12={finale12}
+        finale34={finale34}
+        refetch={refetch}
+        bracketView={() => setShowFullBracket(true)}
+      />
+    )
   }
 
   return (
     <div className="page">
-      <div className="page-title">Risultati: fase a eliminazione</div>
-      <button className="refresh-btn" onClick={refetch}>↻ Aggiorna</button>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, flexWrap:'wrap', gap:8 }}>
+        <div className="page-title" style={{ margin:0 }}>Risultati: fase a eliminazione</div>
+        <div style={{ display:'flex', gap:8 }}>
+          <button className="refresh-btn" style={{ margin:0 }} onClick={refetch}>↻ Aggiorna</button>
+          {isMobile && (
+            <button className="view-toggle-btn" onClick={() => setShowFullBracket(false)}>
+              ← Lista partite
+            </button>
+          )}
+        </div>
+      </div>
 
       <div style={{ overflowX:'auto', paddingBottom:16 }}>
         <div style={{ display:'inline-flex', alignItems:'flex-start', gap:0 }}>
