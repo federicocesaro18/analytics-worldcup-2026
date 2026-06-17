@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useSheetData } from '../hooks/useSheetData'
-import { parseCat, parseMatchScore } from '../utils/parseData'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { parseCat, parseMatchScore, ROUND_NAMES } from '../utils/parseData'
 
 // ─── layout constants ────────────────────────────────────────────────────────
 const SLOT_H   = 82    // px – slot height in the densest round (R32)
@@ -120,9 +121,44 @@ function CenterCol({ finale12, finale34, baseSlots }) {
   )
 }
 
+// ─── mobile: lista per round ──────────────────────────────────────────────────
+function MobileTabellone({ rounds, finale12, finale34, refetch }) {
+  const ROUND_KEYS = ['S', 'O', 'Q', 'SF']
+  const sections = []
+  for (const key of ROUND_KEYS) {
+    const matches = rounds[key]
+    if (matches?.length) sections.push({ name: ROUND_NAMES[key], matches, key })
+  }
+  if (finale12 || finale34) {
+    sections.push({
+      name: 'Finali',
+      matches: [finale12, finale34].filter(Boolean),
+      key: 'Finale',
+    })
+  }
+
+  return (
+    <div className="page">
+      <div className="page-title">Fase a eliminazione</div>
+      <button className="refresh-btn" onClick={refetch}>↻ Aggiorna</button>
+      {sections.map(section => (
+        <div key={section.key} className="mobile-round-section">
+          <div className="mobile-round-title">{section.name}</div>
+          {section.matches.map((match, i) => (
+            <div key={i} className="mobile-match-wrap">
+              <MatchCard match={match} />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ─── main component ───────────────────────────────────────────────────────────
 export default function Tabellone() {
   const { data, loading, error, refetch } = useSheetData('Partite')
+  const isMobile = useIsMobile()
 
   const bracket = useMemo(() => {
     if (!data.length) return null
@@ -182,7 +218,7 @@ export default function Tabellone() {
     const outerCount = Math.max(sL.length || 0, oL.length || 0, qL.length || 0, sfL.length || 1)
     const baseSlots  = outerCount
 
-    return { leftRounds, rightRounds, finale12, finale34, baseSlots }
+    return { leftRounds, rightRounds, finale12, finale34, baseSlots, rounds }
   }, [data])
 
   if (loading) return <div className="loading">Caricamento...</div>
@@ -196,7 +232,11 @@ export default function Tabellone() {
     )
   }
 
-  const { leftRounds, rightRounds, finale12, finale34, baseSlots } = bracket
+  const { leftRounds, rightRounds, finale12, finale34, baseSlots, rounds } = bracket
+
+  if (isMobile) {
+    return <MobileTabellone rounds={rounds} finale12={finale12} finale34={finale34} refetch={refetch} />
+  }
 
   return (
     <div className="page">
