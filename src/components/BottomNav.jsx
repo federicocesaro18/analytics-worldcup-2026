@@ -1,12 +1,11 @@
 const TABS = [
   {
-    id: 'scelte', label: 'Scelte',
+    id: 'classifica', label: 'Classifica',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-        <rect x="5" y="2" width="14" height="20" rx="2"/>
-        <line x1="9" y1="8" x2="15" y2="8"/>
-        <line x1="9" y1="12" x2="15" y2="12"/>
-        <line x1="9" y1="16" x2="12" y2="16"/>
+        <rect x="3" y="12" width="4" height="9"/>
+        <rect x="10" y="7" width="4" height="14"/>
+        <rect x="17" y="3" width="4" height="18"/>
       </svg>
     ),
   },
@@ -36,16 +35,6 @@ const TABS = [
     ),
   },
   {
-    id: 'classifica', label: 'Classifica',
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-        <rect x="3" y="12" width="4" height="9"/>
-        <rect x="10" y="7" width="4" height="14"/>
-        <rect x="17" y="3" width="4" height="18"/>
-      </svg>
-    ),
-  },
-  {
     id: 'marcatori', label: 'Gol',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -54,6 +43,17 @@ const TABS = [
         <path d="M3 12h18"/>
         <path d="M5.5 7.5c2 1 4 1.5 6.5 1.5s4.5-.5 6.5-1.5"/>
         <path d="M5.5 16.5c2-1 4-1.5 6.5-1.5s4.5.5 6.5 1.5"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'scelte', label: 'Scelte',
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <rect x="5" y="2" width="14" height="20" rx="2"/>
+        <line x1="9" y1="8" x2="15" y2="8"/>
+        <line x1="9" y1="12" x2="15" y2="12"/>
+        <line x1="9" y1="16" x2="12" y2="16"/>
       </svg>
     ),
   },
