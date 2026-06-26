@@ -80,6 +80,67 @@ export function calcStandings(matches) {
   return { standings: result, h2h }
 }
 
+// Returns true if `other` could end up ranked above `team` assuming they tie on points.
+// Uses H2H as first tiebreaker (already decided if match played).
+// Falls back to "could rank above" if H2H is fully tied and GD can still change.
+export function otherCouldRankAbove(team, other, h2h) {
+  const tH = h2h[team.Squadra]?.[other.Squadra]
+  const oH = h2h[other.Squadra]?.[team.Squadra]
+  if (!tH || !oH) return true // H2H not played yet → uncertain
+
+  if (oH.pts !== tH.pts) return oH.pts > tH.pts
+  const oHGD = oH.gf - oH.gs, tHGD = tH.gf - tH.gs
+  if (oHGD !== tHGD) return oHGD > tHGD
+  if (oH.gf !== tH.gf) return oH.gf > tH.gf
+
+  // H2H fully tied → fall back to overall GD/GF
+  // If both teams finished, the ranking is already fixed; otherwise it could change
+  if (team.G === 3 && other.G === 3) {
+    if (other.GD !== team.GD) return other.GD > team.GD
+    return other.GF > team.GF
+  }
+  return true // GD can still change → conservative: assume could rank above
+}
+
+// Team at `pos` is confirmed top 2 if fewer than 2 other teams could end up above it.
+// "Could end up above" = can reach strictly more points OR can tie on points AND win tiebreakers.
+export function isConfirmedTop2(standings, pos, h2h) {
+  const team = standings[pos]
+  let canBeatCount = 0
+  for (let i = 0; i < standings.length; i++) {
+    if (i === pos) continue
+    const other = standings[i]
+    const maxPts = other.Pts + 3 * (3 - other.G)
+    if (maxPts > team.Pts) {
+      canBeatCount++
+    } else if (maxPts === team.Pts && otherCouldRankAbove(team, other, h2h)) {
+      canBeatCount++
+    }
+    if (canBeatCount >= 2) return false
+  }
+  return true
+}
+
+// Symmetric to isConfirmedTop2: team at `pos` is confirmed OUT of top 2 if at least
+// 2 other teams already have more points than this team could ever reach (or tie
+// it and would win the tiebreaker). Points only ever go up, so this is permanent.
+export function isConfirmedEliminatedFromTop2(standings, pos, h2h) {
+  const team = standings[pos]
+  const teamMaxPts = team.Pts + 3 * (3 - team.G)
+  let aboveCount = 0
+  for (let i = 0; i < standings.length; i++) {
+    if (i === pos) continue
+    const other = standings[i]
+    if (other.Pts > teamMaxPts) {
+      aboveCount++
+    } else if (other.Pts === teamMaxPts && otherCouldRankAbove(team, other, h2h)) {
+      aboveCount++
+    }
+    if (aboveCount >= 2) return true
+  }
+  return false
+}
+
 // Bracket: parsa categoria → { roundKey, sortNum, label }
 const ROUND_ORDER  = { S: 1, O: 2, Q: 3, SF: 4, Finale: 5 }
 const ROUND_NAMES  = { S: 'Sedicesimi', O: 'Ottavi', Q: 'Quarti', SF: 'Semifinali', Finale: 'Finali' }

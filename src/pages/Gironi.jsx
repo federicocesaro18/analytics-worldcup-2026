@@ -1,47 +1,6 @@
 import { useMemo } from 'react'
 import { useSheetData } from '../hooks/useSheetData'
-import { calcStandings } from '../utils/parseData'
-
-// Returns true if `other` could end up ranked above `team` assuming they tie on points.
-// Uses H2H as first tiebreaker (already decided if match played).
-// Falls back to "could rank above" if H2H is fully tied and GD can still change.
-function otherCouldRankAbove(team, other, h2h) {
-  const tH = h2h[team.Squadra]?.[other.Squadra]
-  const oH = h2h[other.Squadra]?.[team.Squadra]
-  if (!tH || !oH) return true // H2H not played yet → uncertain
-
-  if (oH.pts !== tH.pts) return oH.pts > tH.pts
-  const oHGD = oH.gf - oH.gs, tHGD = tH.gf - tH.gs
-  if (oHGD !== tHGD) return oHGD > tHGD
-  if (oH.gf !== tH.gf) return oH.gf > tH.gf
-
-  // H2H fully tied → fall back to overall GD/GF
-  // If both teams finished, the ranking is already fixed; otherwise it could change
-  if (team.G === 3 && other.G === 3) {
-    if (other.GD !== team.GD) return other.GD > team.GD
-    return other.GF > team.GF
-  }
-  return true // GD can still change → conservative: assume could rank above
-}
-
-// Team at `pos` is confirmed top 2 if fewer than 2 other teams could end up above it.
-// "Could end up above" = can reach strictly more points OR can tie on points AND win tiebreakers.
-function isConfirmedTop2(standings, pos, h2h) {
-  const team = standings[pos]
-  let canBeatCount = 0
-  for (let i = 0; i < standings.length; i++) {
-    if (i === pos) continue
-    const other = standings[i]
-    const maxPts = other.Pts + 3 * (3 - other.G)
-    if (maxPts > team.Pts) {
-      canBeatCount++
-    } else if (maxPts === team.Pts && otherCouldRankAbove(team, other, h2h)) {
-      canBeatCount++
-    }
-    if (canBeatCount >= 2) return false
-  }
-  return true
-}
+import { calcStandings, isConfirmedTop2 } from '../utils/parseData'
 
 function GroupBlock({ name, matches, standings, h2h, top8Thirds }) {
   return (
